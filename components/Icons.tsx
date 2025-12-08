@@ -28,7 +28,8 @@ import {
   SkipBack,
   SkipForward,
   Type,
-  Pointer
+  Pointer,
+  Trash2
 } from 'lucide-react';
 
 export const Icons = {
@@ -59,5 +60,6 @@ export const Icons = {
   SkipBack,
   SkipForward,
   Type,
-  Pointer
+  Pointer,
+  Trash: Trash2
 };
