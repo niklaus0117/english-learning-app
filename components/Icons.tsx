@@ -22,6 +22,7 @@ import {
   Star,
   Share,
   ListOrdered,
+  Info,
   RefreshCw,
   Play,
   Pause,
@@ -29,7 +30,8 @@ import {
   SkipForward,
   Type,
   Pointer,
-  Trash2
+  Trash2,
+  Lightbulb
 } from 'lucide-react';
 
 export const Icons = {
@@ -54,6 +56,7 @@ export const Icons = {
   Star,
   Share,
   ListOrdered,
+  Info,
   Repeat: RefreshCw,
   Play,
   Pause,
@@ -61,5 +64,6 @@ export const Icons = {
   SkipForward,
   Type,
   Pointer,
-  Trash: Trash2
+  Trash: Trash2,
+  Lightbulb
 };

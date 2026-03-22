@@ -8,9 +8,12 @@ interface CourseDetailPageProps {
   course: Course;
   onBack: () => void;
   onLessonClick?: (lesson: Lesson) => void;
+  onDownloadLesson: (lesson: Lesson) => void;
+  onBuy?: () => void;
+  downloadedLessons: Lesson[];
 }
 
-const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onLessonClick }) => {
+const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onLessonClick, onDownloadLesson, onBuy, downloadedLessons }) => {
   const [activeTab, setActiveTab] = useState<'directory' | 'details'>('directory');
 
   return (
@@ -75,10 +78,6 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onL
             <span>发布者:Nice</span>
             <ChevronRight size={14} />
         </div>
-
-        <button className="bg-orange-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-sm">
-            + 加入书架
-        </button>
       </div>
 
       {/* --- Tabs --- */}
@@ -123,8 +122,17 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onL
                                     未学
                                 </div>
                             </div>
-                            <button className="text-gray-300 mt-1">
-                                <ArrowDownCircle size={20} />
+                            <button 
+                                className="mt-1"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDownloadLesson && onDownloadLesson(lesson);
+                                }}
+                            >
+                                <ArrowDownCircle 
+                                    size={20} 
+                                    className={downloadedLessons.find(l => l.id === lesson.id) ? "text-teal-500" : "text-gray-300"} 
+                                />
                             </button>
                         </div>
                     ))}
@@ -143,8 +151,17 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onL
                                     未学
                                 </div>
                             </div>
-                            <button className="text-gray-300 mt-1">
-                                <ArrowDownCircle size={20} />
+                            <button 
+                                className="mt-1"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDownloadLesson && onDownloadLesson(lesson);
+                                }}
+                            >
+                                <ArrowDownCircle 
+                                    size={20} 
+                                    className={downloadedLessons.find(l => l.id === lesson.id) ? "text-teal-500" : "text-gray-300"} 
+                                />
                             </button>
                         </div>
                     ))}
@@ -167,7 +184,10 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onL
           </div>
 
           {/* Buy Button */}
-          <button className="flex-1 bg-orange-500 text-white font-bold text-lg h-12 rounded-full shadow-lg flex items-center justify-center">
+          <button 
+            onClick={onBuy}
+            className="flex-1 bg-orange-500 text-white font-bold text-lg h-12 rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform"
+          >
               ¥{course.price ? course.price.toFixed(2) : '0.00'}
           </button>
 
