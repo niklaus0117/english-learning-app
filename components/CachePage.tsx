@@ -10,7 +10,7 @@ interface CachePageProps {
 
 const CachePage: React.FC<CachePageProps> = ({ downloadedLessons, onBack, onLessonClick }) => {
   return (
-    <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative flex flex-col">
+    <div className="h-full w-full bg-gray-50 relative flex flex-col">
       {/* Header */}
       <div className="bg-white px-4 py-3 flex items-center justify-between sticky top-0 z-10 shadow-sm">
         <button onClick={onBack} className="p-1 -ml-2 text-gray-700">

@@ -44,7 +44,7 @@ export interface ApiResponse<T> {
 
 export enum TabName {
   HOME = '首页',
-  COLLECTION = '收藏',
+  BOOKSHELF = '书架',
   AI_CHAT = 'AI助教',
   VOCABULARY = '生词本',
   PROFILE = '我的'
