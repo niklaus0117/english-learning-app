@@ -17,7 +17,7 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onL
   const [activeTab, setActiveTab] = useState<'directory' | 'details'>('directory');
 
   return (
-    <div className="min-h-screen bg-white max-w-md mx-auto relative flex flex-col pb-24">
+    <div className="min-h-screen bg-white relative flex flex-col pb-24">
       
       {/* --- Top Section (Dark Background) --- */}
       <div className="bg-[#786C5E] text-white p-4 pb-6">
@@ -176,7 +176,7 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onL
       </div>
 
       {/* --- Bottom Action Bar --- */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-100 px-4 py-3 flex items-center space-x-4 z-50 h-[80px]">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-3 flex items-center space-x-4 z-50 h-[80px]">
           {/* Customer Service */}
           <div className="flex flex-col items-center justify-center text-gray-500 min-w-[3rem]">
               <MessageCircle size={24} />

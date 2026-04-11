@@ -30,7 +30,7 @@ const DailyReadingPage: React.FC<DailyReadingPageProps> = ({ onBack, onCourseCli
   }, []);
 
   return (
-    <div className="min-h-screen bg-white max-w-md mx-auto relative flex flex-col">
+    <div className="min-h-screen bg-white relative flex flex-col">
       
       {/* --- Header --- */}
       <header className="bg-white px-4 py-3 flex items-center sticky top-0 z-50 shadow-sm">
