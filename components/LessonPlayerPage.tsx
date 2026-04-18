@@ -370,12 +370,12 @@ const LessonPlayerPage: React.FC<LessonPlayerPageProps> = ({ lesson, onBack }) =
                         className={`transition-colors duration-300 rounded cursor-pointer ${isActive ? 'bg-[#F2F7FF] -mx-2 px-2 py-1' : 'bg-transparent'}`}
                     >
                         {/* English */}
-                        <div className={`text-[16px] leading-[1.5] mb-1 font-serif ${isActive ? 'text-[#5C6BFA]' : 'text-[#333]'}`}>
+                        <div className={`text-[16px] leading-[1.5] mb-1 font-serif ${isActive ? 'text-[#222] font-semibold' : 'text-[#333]'}`}>
                             {sentence.text}
                         </div>
                         
                         {/* Chinese (Restored to real translation) */}
-                        <div className={`text-[13px] font-serif tracking-wide ${isActive ? 'text-[#5C6BFA]/80' : 'text-[#888]'}`}>
+                        <div className="text-[13px] text-[#888] font-serif tracking-wide">
                             {sentence.translation.split(',')[0]}，{sentence.translation.split(',')[1]}
                         </div>
                     </div>
