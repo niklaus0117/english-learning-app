@@ -5,9 +5,56 @@ import { Course } from '../types';
 interface CourseCardProps {
   course: Course;
   onClick?: (course: Course) => void;
+  layout?: 'grid' | 'list';
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ course, onClick }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ course, onClick, layout = 'grid' }) => {
+  if (layout === 'list') {
+    return (
+      <div 
+        className="flex gap-3 bg-white mb-4 cursor-pointer active:opacity-80 transition-opacity"
+        onClick={() => onClick && onClick(course)}
+      >
+        {/* Image Container */}
+        <div className="relative rounded-xl overflow-hidden shadow-sm w-28 h-20 flex-shrink-0 bg-gray-200">
+          <img 
+            src={course.imageUrl} 
+            alt={course.title} 
+            className="w-full h-full object-cover"
+          />
+          {/* Play Count */}
+          <div className="absolute bottom-1 right-1 bg-black/40 backdrop-blur-sm text-white text-[9px] px-1.5 py-0.5 rounded border border-white/10">
+            {course.playCount > 10000 ? `${Math.floor(course.playCount/10000)}万` : course.playCount}播放
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 flex flex-col justify-between py-0.5">
+          <div>
+            <h3 className="font-bold text-gray-900 text-sm leading-tight mb-1 line-clamp-1">
+              {course.title}
+            </h3>
+            <p className="text-gray-500 text-xs line-clamp-1">
+              {course.subtitle || `共${course.lessons?.length || 0}篇`}
+            </p>
+          </div>
+          
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1 mt-1">
+            {course.tags.slice(0, 2).map((tag, index) => (
+              <span 
+                key={index} 
+                className="text-[10px] px-1.5 py-0.5 rounded bg-orange-50 text-orange-600"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div 
       className="flex flex-col bg-transparent mb-6 cursor-pointer active:opacity-80 transition-opacity"

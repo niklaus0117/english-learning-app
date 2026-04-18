@@ -10,8 +10,10 @@ export interface Course {
   tags: string[];
   isVip?: boolean;
   themeColor?: string;
-  author?: string; // New
-  price?: number; // New
+  author?: string;
+  price?: number;
+  category?: string; // For filtering in Daily Reading
+  lessons?: Lesson[]; // Specific lessons for this course
 }
 
 export interface Lesson {
@@ -19,6 +21,9 @@ export interface Lesson {
   title: string;
   duration?: string;
   isLearned: boolean;
+  mediaType?: 'audio' | 'video';
+  mediaUrl?: string;
+  coverUrl?: string;
 }
 
 export interface LessonSentence {

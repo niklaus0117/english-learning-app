@@ -10,6 +10,9 @@ import LessonPlayerPage from './components/LessonPlayerPage';
 import ProfilePage from './components/ProfilePage';
 import BookshelfPage from './components/BookshelfPage';
 import CachePage from './components/CachePage';
+import CategoryListPage from './components/CategoryListPage';
+import CategoryDetailPage from './components/CategoryDetailPage';
+import MorningReadingPage from './components/MorningReadingPage';
 import { apiService } from './services/api';
 import { Course, TabName, Lesson } from './types';
 import { MOCK_COURSES, MOCK_LESSONS } from './constants';
@@ -19,10 +22,12 @@ function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
   const [activeTab, setActiveTab] = useState<TabName>(TabName.HOME);
-  const [topTab, setTopTab] = useState<'recommend' | 'purchased'>('recommend');
+  const [topTab, setTopTab] = useState<string>('推荐');
   
   // Navigation State
-  const [currentView, setCurrentView] = useState<'main' | 'dailyReading' | 'courseDetail' | 'lessonPlayer' | 'cache'>('main');
+  const [currentView, setCurrentView] = useState<'main' | 'dailyReading' | 'courseDetail' | 'lessonPlayer' | 'cache' | 'categoryList' | 'categoryDetail' | 'morningReading'>('main');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedChannel, setSelectedChannel] = useState<any>(null);
   // Store the previous view to handle "Back" correctly
   const [courseDetailSourceView, setCourseDetailSourceView] = useState<'main' | 'dailyReading'>('main');
   const [lessonPlayerSourceView, setLessonPlayerSourceView] = useState<'courseDetail' | 'cache' | 'bookshelf'>('courseDetail');
@@ -132,6 +137,50 @@ function App() {
         );
     }
 
+    // --- Render Category List Page ---
+    if (currentView === 'categoryList') {
+        return (
+          <CategoryListPage 
+            categoryName={selectedCategory} 
+            onBack={() => setCurrentView('main')} 
+            onItemClick={(item) => {
+              setSelectedChannel(item);
+              setCurrentView('categoryDetail');
+            }}
+          />
+        );
+    }
+
+    // --- Render Category Detail Page ---
+    if (currentView === 'categoryDetail' && selectedChannel) {
+        return (
+          <CategoryDetailPage
+            title={selectedChannel.title}
+            onBack={() => setCurrentView('categoryList')}
+            onItemClick={(item) => {
+              // Create a mock lesson out of the item to play
+              setSelectedLesson({
+                id: item.id,
+                courseId: 'mock',
+                title: item.title,
+                duration: item.duration || '49:58',
+                progress: 0,
+                mediaType: 'video',
+                mediaUrl: 'https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4',
+                coverUrl: item.imageUrl
+              });
+              setLessonPlayerSourceView('categoryDetail');
+              setCurrentView('lessonPlayer');
+            }}
+          />
+        );
+    }
+
+    // --- Render Morning Reading Page ---
+    if (currentView === 'morningReading') {
+        return <MorningReadingPage onBack={() => setCurrentView('main')} />;
+    }
+
     // --- Render Lesson Player Page ---
     if (currentView === 'lessonPlayer' && selectedLesson) {
         return (
@@ -149,108 +198,101 @@ function App() {
         {activeTab === TabName.HOME && (
           <>
             {/* --- Sticky Header --- */}
-            <header className="sticky top-0 z-40 bg-white pt-2 px-4 pb-2">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex space-x-6 relative">
-                   {/* Tab Indicator Line */}
-                   <div className={`absolute bottom-[-4px] h-[3px] w-6 bg-teal-500 rounded-full transition-all duration-300 ${topTab === 'recommend' ? 'left-1' : 'left-[4.5rem]'}`}></div>
-                   
-                   <button 
-                      onClick={() => setTopTab('recommend')}
-                      className={`text-xl font-bold transition-colors ${topTab === 'recommend' ? 'text-gray-900' : 'text-gray-400'}`}
-                   >
-                      推荐
-                   </button>
-                   <button 
-                      onClick={() => requireAuth(() => setTopTab('purchased'))}
-                      className={`text-xl font-bold transition-colors ${topTab === 'purchased' ? 'text-gray-900' : 'text-gray-400'}`}
-                   >
-                      已购
-                   </button>
-                </div>
-                <button className="p-1">
-                   <Icons.Menu className="text-gray-600" size={24} />
-                </button>
-              </div>
-
-              {/* Search Bar */}
+            <header className="sticky top-0 z-40 bg-gradient-to-b from-orange-50 to-white pt-4 px-4 pb-2">
+              {/* Search Bar & Notification */}
               <div className="flex items-center gap-3">
-                  <div className="flex-1 bg-gray-100 rounded-full px-3 py-2 flex items-center">
-                      <Icons.Search className="text-gray-400 mr-2" size={18} />
+                  <div className="flex-1 bg-white rounded-full px-4 py-1.5 flex items-center shadow-sm border border-gray-100">
+                      <Icons.Search className="text-gray-400 mr-2" size={16} />
                       <input 
                           type="text" 
-                          placeholder="请输入搜索内容" 
-                          className="bg-transparent w-full outline-none text-sm text-gray-700 placeholder-gray-400"
+                          placeholder="CNN 10 学生英语" 
+                          className="bg-transparent w-full outline-none text-xs text-gray-700 placeholder-gray-400"
                       />
                   </div>
-                  <div className="flex flex-col items-center justify-center text-gray-500">
-                      <Icons.Message size={22} />
-                      <span className="text-[10px] scale-75">消息</span>
-                  </div>
-                  <div className="flex flex-col items-center justify-center text-gray-500">
-                      <Icons.CustomerService size={22} />
-                      <span className="text-[10px] scale-75">客服</span>
+                  <div className="relative cursor-pointer mt-1">
+                      <Icons.Bell className="text-gray-700" size={24} />
+                      <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[8px] font-bold px-1 rounded-full border border-white">20</span>
                   </div>
               </div>
             </header>
 
-            <main className="px-4 pt-4">
+            <main className="px-4 pt-2 bg-white">
               {/* Banner */}
-              <div className="w-full bg-gradient-to-r from-orange-400 to-red-400 rounded-2xl p-4 text-white relative overflow-hidden mb-6 h-40 shadow-md">
-                  {/* Decorative Circles */}
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/20 rounded-full blur-xl"></div>
-                  <div className="absolute bottom-0 right-10 w-16 h-16 bg-yellow-300/30 rounded-full blur-lg"></div>
-
-                  <div className="relative z-10 w-2/3">
-                      <h2 className="text-lg font-bold mb-1 shadow-sm">APP中有海量书籍与精品课程</h2>
-                      <h3 className="text-xl font-black mb-3">购买哪个学习哪个</h3>
-                      <div className="inline-block bg-white text-orange-500 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                          星辰大海 未来可期
-                      </div>
-                  </div>
-                  {/* 3D Character Illustration Placeholder */}
-                  <div className="absolute -bottom-2 -right-2 w-32 h-32">
-                      <img 
-                        src="https://picsum.photos/200/200?random=100" 
-                        alt="Mascot" 
-                        className="w-full h-full object-contain drop-shadow-lg"
-                        style={{clipPath: 'circle(50%)'}} 
-                        referrerPolicy="no-referrer"
-                      />
-                  </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="flex gap-3 mb-8">
-                  <div className="flex-1 bg-orange-50 rounded-xl p-3 flex items-center justify-between cursor-pointer active:scale-95 transition-transform" onClick={() => requireAuth(() => setTopTab('purchased'))}>
-                      <span className="font-bold text-orange-800 text-sm">已购课程</span>
-                      <Icons.ArrowRight className="text-orange-400" size={16} />
-                  </div>
-                  <div className="flex-1 bg-teal-50 rounded-xl p-3 flex items-center justify-between cursor-pointer active:scale-95 transition-transform">
-                      <span className="font-bold text-teal-800 text-sm">兑换中心</span>
-                      <Icons.ArrowRight className="text-teal-400" size={16} />
-                  </div>
-              </div>
-
-              {/* Daily Reading Header */}
               <div 
-                  className="flex items-center justify-between mb-4 cursor-pointer"
-                  onClick={() => setCurrentView('dailyReading')}
+                className="w-full rounded-2xl overflow-hidden relative mb-6 shadow-sm h-40 cursor-pointer active:scale-[0.98] transition-transform"
+                onClick={() => setCurrentView('morningReading')}
               >
-                  <h2 className="text-xl font-bold text-gray-900">每日英语听读</h2>
-                  <div className="flex items-center text-gray-400 text-xs">
-                      <span>查看更多</span>
-                      <Icons.ArrowRight size={12} />
+                  <img 
+                    src="https://picsum.photos/800/400?random=banner3" 
+                    alt="Banner" 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                  {/* Banner content overlay to match design */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-gray-900/60 to-transparent flex flex-col justify-center p-6">
+                      <div className="bg-white/90 text-gray-800 text-xs font-bold px-2 py-1 rounded w-fit mb-2">每日英语听力独家出品</div>
+                      <h2 className="text-white text-2xl font-black drop-shadow-md">晨读专栏</h2>
+                      <h3 className="text-white text-lg font-medium drop-shadow-md mt-1">带你读美句学英语</h3>
+                  </div>
+                  {/* Dots */}
+                  <div className="absolute bottom-3 right-4 flex gap-1.5">
+                     <div className="w-4 h-1.5 bg-white rounded-full"></div>
+                     <div className="w-1.5 h-1.5 bg-white/50 rounded-full"></div>
+                     <div className="w-1.5 h-1.5 bg-white/50 rounded-full"></div>
+                     <div className="w-1.5 h-1.5 bg-white/50 rounded-full"></div>
                   </div>
               </div>
 
-              {/* Course Grid */}
-              <div className="grid grid-cols-2 gap-4 pb-6">
+              {/* Grid Menu */}
+              <div className="grid grid-cols-4 gap-y-5 gap-x-2 mb-8">
+                  {[
+                    { name: '少儿启蒙', icon: Icons.Baby, color: 'text-blue-600', bg: 'bg-blue-50' },
+                    { name: '教材', icon: Icons.Book, color: 'text-red-500', bg: 'bg-red-50' },
+                    { name: '考试', icon: Icons.FileText, color: 'text-orange-500', bg: 'bg-orange-50' },
+                    { name: '公开课', icon: Icons.GraduationCap, color: 'text-amber-600', bg: 'bg-amber-50' },
+                    { name: '人文历史', icon: Icons.Calendar, color: 'text-purple-500', bg: 'bg-purple-50' },
+                    { name: '影视', icon: Icons.Film, color: 'text-blue-500', bg: 'bg-blue-50' },
+                    { name: '演讲', icon: Icons.Mic, color: 'text-indigo-500', bg: 'bg-indigo-50' },
+                    { name: '有声读物', icon: Icons.Headphones, color: 'text-cyan-500', bg: 'bg-cyan-50' },
+                  ].map((item, idx) => (
+                      <div 
+                        key={idx} 
+                        onClick={() => {
+                          setSelectedCategory(item.name);
+                          setCurrentView('categoryList');
+                        }} 
+                        className="flex flex-col items-center gap-1.5 cursor-pointer active:scale-95 transition-transform"
+                      >
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${item.bg} ${item.color} shadow-sm`}>
+                              <item.icon size={24} strokeWidth={1.5} />
+                          </div>
+                          <span className="text-xs text-gray-700">{item.name}</span>
+                      </div>
+                  ))}
+              </div>
+
+              {/* Hot Recommendations Header */}
+              <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-bold text-gray-900 flex items-center gap-1">
+                      <span className="text-orange-500 text-xl">🔥</span> 热门推荐
+                  </h2>
+                  <div 
+                      className="flex items-center text-gray-400 text-xs cursor-pointer"
+                      onClick={() => setCurrentView('dailyReading')}
+                  >
+                      <span>查看更多</span>
+                      <Icons.ChevronRight size={14} />
+                  </div>
+              </div>
+
+              {/* Course List */}
+              <div className="flex flex-col pb-6">
                   {courses.map(course => (
                       <CourseCard 
                           key={course.id} 
                           course={course} 
                           onClick={handleCourseClick}
+                          layout="list"
                       />
                   ))}
               </div>
@@ -300,6 +342,33 @@ function App() {
         )}
 
         {/* --- Bottom Navigation --- */}
+        {/* Mini Player */}
+        {selectedLesson && currentView !== 'lessonPlayer' && (
+           <div 
+             className="absolute bottom-[68px] left-3 right-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-2 flex items-center gap-3 z-40 border border-gray-100 cursor-pointer"
+             onClick={() => setCurrentView('lessonPlayer')}
+           >
+              <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative">
+                 <img src={selectedLesson.coverUrl || 'https://picsum.photos/100/100'} className="w-full h-full object-cover" />
+                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                    <Icons.Play className="text-white fill-white" size={16} />
+                 </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                 <h4 className="text-sm font-bold text-gray-900 truncate">{selectedLesson.title}</h4>
+                 <p className="text-xs text-gray-500 truncate">点击继续播放</p>
+              </div>
+              <div className="flex items-center gap-3 pr-2">
+                 <button className="p-1.5 text-gray-800 hover:bg-gray-100 rounded-full" onClick={(e) => { e.stopPropagation(); setCurrentView('lessonPlayer'); }}>
+                    <Icons.Play size={24} className="fill-current" />
+                 </button>
+                 <button className="p-1.5 text-gray-800 hover:bg-gray-100 rounded-full" onClick={(e) => { e.stopPropagation(); }}>
+                    <Icons.SkipForward size={24} className="fill-current" />
+                 </button>
+              </div>
+           </div>
+        )}
+
         <nav className="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-around items-center pb-safe pt-2 h-[60px] z-50">
           <NavButton 
               icon={<Icons.Home size={24} />} 

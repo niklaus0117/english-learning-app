@@ -29,6 +29,8 @@ const DailyReadingPage: React.FC<DailyReadingPageProps> = ({ onBack, onCourseCli
     setCourses(DAILY_READING_COURSES);
   }, []);
 
+  const filteredCourses = courses.filter(course => course.category === activeCategory);
+
   return (
     <div className="min-h-screen bg-white relative flex flex-col">
       
@@ -87,11 +89,17 @@ const DailyReadingPage: React.FC<DailyReadingPageProps> = ({ onBack, onCourseCli
             </div>
 
             {/* --- Course Grid --- */}
-            <div className="grid grid-cols-2 gap-4">
-                {courses.map(course => (
-                    <CourseCard key={course.id} course={course} onClick={onCourseClick} />
-                ))}
-            </div>
+            {filteredCourses.length > 0 ? (
+              <div className="grid grid-cols-2 gap-4">
+                  {filteredCourses.map(course => (
+                      <CourseCard key={course.id} course={course} onClick={onCourseClick} />
+                  ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                <p className="text-sm">该分类下暂无内容</p>
+              </div>
+            )}
 
         </div>
       </div>

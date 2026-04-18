@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ChevronLeft, Share, Flame, ArrowDownCircle, MessageCircle, PlayCircle, ListMusic, ChevronRight } from 'lucide-react';
+import { ChevronLeft, Share, Flame, ArrowDownCircle, MessageCircle, PlayCircle, ListMusic, ChevronRight, Video, Headphones } from 'lucide-react';
 import { Course, Lesson } from '../types';
 import { MOCK_LESSONS } from '../constants';
 
@@ -15,6 +15,8 @@ interface CourseDetailPageProps {
 
 const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onLessonClick, onDownloadLesson, onBuy, downloadedLessons }) => {
   const [activeTab, setActiveTab] = useState<'directory' | 'details'>('directory');
+  
+  const lessonsToDisplay = course.lessons || MOCK_LESSONS;
 
   return (
     <div className="min-h-screen bg-white relative flex flex-col pb-24">
@@ -108,47 +110,30 @@ const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onL
             <div>
                 <div className="text-teal-500 text-sm font-bold mb-4">全部</div>
                 <div className="space-y-6">
-                    {MOCK_LESSONS.map((lesson) => (
+                    {lessonsToDisplay.map((lesson) => (
                         <div 
                             key={lesson.id} 
                             className="flex items-start justify-between cursor-pointer active:bg-gray-50 -mx-2 px-2 py-2 rounded-lg transition-colors"
                             onClick={() => onLessonClick && onLessonClick(lesson)}
                         >
                             <div className="flex-1 pr-4">
-                                <h3 className="text-sm font-medium text-gray-800 leading-normal mb-1">
-                                    {lesson.title}
-                                </h3>
-                                <div className="inline-block bg-gray-100 text-gray-400 text-[10px] px-2 py-0.5 rounded-sm">
-                                    未学
+                                <div className="flex items-center space-x-2 mb-1">
+                                    {lesson.mediaType === 'video' ? (
+                                        <Video size={16} className="text-blue-500 flex-shrink-0" />
+                                    ) : (
+                                        <Headphones size={16} className="text-orange-500 flex-shrink-0" />
+                                    )}
+                                    <h3 className="text-sm font-medium text-gray-800 leading-normal">
+                                        {lesson.title}
+                                    </h3>
                                 </div>
-                            </div>
-                            <button 
-                                className="mt-1"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onDownloadLesson && onDownloadLesson(lesson);
-                                }}
-                            >
-                                <ArrowDownCircle 
-                                    size={20} 
-                                    className={downloadedLessons.find(l => l.id === lesson.id) ? "text-teal-500" : "text-gray-300"} 
-                                />
-                            </button>
-                        </div>
-                    ))}
-                    {/* Duplicate list to show scrolling */}
-                    {MOCK_LESSONS.map((lesson) => (
-                        <div 
-                             key={`${lesson.id}-dup`} 
-                             className="flex items-start justify-between cursor-pointer active:bg-gray-50 -mx-2 px-2 py-2 rounded-lg transition-colors"
-                             onClick={() => onLessonClick && onLessonClick(lesson)}
-                        >
-                            <div className="flex-1 pr-4">
-                                <h3 className="text-sm font-medium text-gray-800 leading-normal mb-1">
-                                    {lesson.title}
-                                </h3>
-                                <div className="inline-block bg-gray-100 text-gray-400 text-[10px] px-2 py-0.5 rounded-sm">
-                                    未学
+                                <div className="flex items-center space-x-2">
+                                    <div className="inline-block bg-gray-100 text-gray-400 text-[10px] px-2 py-0.5 rounded-sm">
+                                        {lesson.isLearned ? '已学' : '未学'}
+                                    </div>
+                                    {lesson.duration && (
+                                        <span className="text-xs text-gray-400">{lesson.duration}</span>
+                                    )}
                                 </div>
                             </div>
                             <button 
